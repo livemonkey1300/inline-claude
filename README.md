@@ -35,10 +35,16 @@ Agent mode edits files directly (`acceptEdits`) but **cannot run shell commands*
 - **Marketplace:** search "Inline Claude" in the Extensions view (auto-updates through VS Code).
 - **From GitHub (Windows / macOS / Linux):** download the `.vsix` from [Releases](https://github.com/livemonkey1300/inline-claude/releases), then `code --install-extension inline-claude-X.Y.Z.vsix` (or Extensions view → `…` → *Install from VSIX*). Sideloaded installs check GitHub Releases for new versions (`inlineClaude.autoUpdate`: `check` / `install` / `off`).
 
-## Releasing (maintainers)
-```
-npm version patch      # or minor / major — bumps package.json and creates the tag
-git push --follow-tags # the Release workflow tests, packages, creates a GitHub Release,
-                       # and publishes to the Marketplace / Open VSX when tokens exist
-```
+## Releasing (automatic)
+Just push to `main` with [Conventional Commits](https://www.conventionalcommits.org). The Release workflow does the rest:
+
+| Commit | Result |
+|---|---|
+| `fix:` / `perf:` / `refactor:` | patch `0.1.0 → 0.1.1` |
+| `feat:` | minor `0.1.0 → 0.2.0` |
+| `feat!:` or `BREAKING CHANGE:` | major (stays `0.x` until you move to 1.0 manually) |
+| `docs:` `ci:` `test:` `chore:` only | no release |
+
+It tests, bumps `package.json`, tags, builds the `.vsix`, creates the GitHub Release page with generated notes, and publishes to the stores. You can also force one from **Actions → Release → Run workflow**.
+
 One-time setup: create a publisher at https://marketplace.visualstudio.com/manage and a Personal Access Token (Azure DevOps, scope *Marketplace → Manage*) → repo secret `VSCE_PAT`. For VSCodium/Cursor/Windsurf: token from https://open-vsx.org → secret `OVSX_PAT`.

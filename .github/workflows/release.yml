@@ -1,32 +1,62 @@
 name: Release
-# Push a tag like v0.2.0 (use `npm version patch|minor|major` then `git push --follow-tags`).
+# Fully automatic: every push to main is tested; if it contains releasable Conventional Commits
+# (feat / fix / perf / refactor, or anything with "!" / BREAKING CHANGE) the version is bumped,
+# tagged, a GitHub Release page is created with generated notes + the .vsix, and the extension
+# is published to the Marketplace / Open VSX when those tokens exist.
 on:
   push:
-    tags: ['v*']
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Force a release with this bump
+        type: choice
+        options: [patch, minor, major]
 permissions:
   contents: write
+concurrency: release
 jobs:
   release:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
     runs-on: ubuntu-latest
+    env:
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      OVSX_PAT: ${{ secrets.OVSX_PAT }}
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - run: npm install
-      - name: Tag must match package.json version
-        run: test "v$(node -p "require('./package.json').version")" = "${GITHUB_REF_NAME}"
       - run: npm test
-      - run: npx vsce package --no-dependencies
-      - name: GitHub Release (VSIX attached; used by the in-extension updater)
+      - name: Work out next version
+        id: v
+        run: node scripts/bump.js
+        env: { FORCE_BUMP: '${{ inputs.bump }}' }
+      - name: Bump, commit and tag
+        if: steps.v.outputs.release == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          npm version "${{ steps.v.outputs.version }}" --no-git-tag-version --allow-same-version
+          git commit -am "chore(release): v${{ steps.v.outputs.version }} [skip ci]"
+          git tag "v${{ steps.v.outputs.version }}"
+          git push origin HEAD:main --follow-tags
+      - name: Package
+        if: steps.v.outputs.release == 'true'
+        run: npx vsce package --no-dependencies
+      - name: GitHub Release page
+        if: steps.v.outputs.release == 'true'
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: v${{ steps.v.outputs.version }}
+          name: v${{ steps.v.outputs.version }}
           files: '*.vsix'
           generate_release_notes: true
       - name: Publish to VS Code Marketplace
-        if: ${{ env.VSCE_PAT != '' }}
+        if: steps.v.outputs.release == 'true' && env.VSCE_PAT != ''
         run: npx vsce publish --no-dependencies --packagePath *.vsix
-        env: { VSCE_PAT: '${{ secrets.VSCE_PAT }}' }
-      - name: Publish to Open VSX (VSCodium, Cursor, Windsurf)
-        if: ${{ env.OVSX_PAT != '' }}
+      - name: Publish to Open VSX
+        if: steps.v.outputs.release == 'true' && env.OVSX_PAT != ''
         run: npx ovsx publish *.vsix -p "$OVSX_PAT"
-        env: { OVSX_PAT: '${{ secrets.OVSX_PAT }}' }
