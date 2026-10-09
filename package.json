@@ -1,0 +1,436 @@
+{
+  "name": "inline-claude",
+  "displayName": "Inline Claude",
+  "description": "Copilot-style inline edit, ghost-text completions, chat, agent mode and AI commit messages — powered by your own Claude Pro/Max subscription through the Claude Code CLI. No API key.",
+  "version": "0.1.0",
+  "publisher": "livemonkey1300",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "AI",
+    "Chat",
+    "Programming Languages",
+    "SCM Providers"
+  ],
+  "keywords": [
+    "claude",
+    "anthropic",
+    "copilot",
+    "ai",
+    "inline edit",
+    "autocomplete",
+    "commit"
+  ],
+  "icon": "media/icon.png",
+  "main": "./src/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "inlineClaude.inlineEdit",
+        "title": "Inline Edit",
+        "category": "Claude",
+        "icon": "$(sparkle)"
+      },
+      {
+        "command": "inlineClaude.acceptEdit",
+        "title": "Accept Inline Edit",
+        "category": "Claude"
+      },
+      {
+        "command": "inlineClaude.rejectEdit",
+        "title": "Reject Inline Edit",
+        "category": "Claude"
+      },
+      {
+        "command": "inlineClaude.showDiff",
+        "title": "Show Diff of Inline Edit",
+        "category": "Claude"
+      },
+      {
+        "command": "inlineClaude.explain",
+        "title": "Explain This",
+        "category": "Claude"
+      },
+      {
+        "command": "inlineClaude.fix",
+        "title": "Fix This",
+        "category": "Claude"
+      },
+      {
+        "command": "inlineClaude.tests",
+        "title": "Write Tests",
+        "category": "Claude"
+      },
+      {
+        "command": "inlineClaude.docs",
+        "title": "Add Documentation",
+        "category": "Claude"
+      },
+      {
+        "command": "inlineClaude.optimize",
+        "title": "Optimize This",
+        "category": "Claude"
+      },
+      {
+        "command": "inlineClaude.askSelection",
+        "title": "Ask About Selection in Chat",
+        "category": "Claude"
+      },
+      {
+        "command": "inlineClaude.openChat",
+        "title": "Open Chat",
+        "category": "Claude",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "inlineClaude.newChat",
+        "title": "New Chat",
+        "category": "Claude",
+        "icon": "$(add)"
+      },
+      {
+        "command": "inlineClaude.selectModel",
+        "title": "Switch Model / Settings Menu",
+        "category": "Claude"
+      },
+      {
+        "command": "inlineClaude.toggleCompletions",
+        "title": "Toggle Auto-Suggestions",
+        "category": "Claude"
+      },
+      {
+        "command": "inlineClaude.generateCommit",
+        "title": "Generate Commit Message",
+        "category": "Claude",
+        "icon": "$(sparkle)"
+      },
+      {
+        "command": "inlineClaude.showUsage",
+        "title": "Show Token Usage",
+        "category": "Claude"
+      },
+      {
+        "command": "inlineClaude.resetUsage",
+        "title": "Reset Token Usage Counters",
+        "category": "Claude"
+      },
+      {
+        "command": "inlineClaude.signIn",
+        "title": "Sign In (Claude subscription)",
+        "category": "Claude"
+      },
+      {
+        "command": "inlineClaude.checkUpdate",
+        "title": "Check for Updates",
+        "category": "Claude"
+      }
+    ],
+    "submenus": [
+      {
+        "id": "inlineClaude.menu",
+        "label": "Claude"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "submenu": "inlineClaude.menu",
+          "group": "0_claude@1",
+          "when": "editorTextFocus"
+        }
+      ],
+      "inlineClaude.menu": [
+        {
+          "command": "inlineClaude.inlineEdit",
+          "group": "1_edit@1",
+          "when": "!editorReadonly"
+        },
+        {
+          "command": "inlineClaude.fix",
+          "group": "1_edit@2",
+          "when": "!editorReadonly"
+        },
+        {
+          "command": "inlineClaude.optimize",
+          "group": "1_edit@3",
+          "when": "!editorReadonly"
+        },
+        {
+          "command": "inlineClaude.docs",
+          "group": "1_edit@4",
+          "when": "!editorReadonly"
+        },
+        {
+          "command": "inlineClaude.explain",
+          "group": "2_chat@1"
+        },
+        {
+          "command": "inlineClaude.tests",
+          "group": "2_chat@2"
+        },
+        {
+          "command": "inlineClaude.askSelection",
+          "group": "2_chat@3"
+        }
+      ],
+      "scm/title": [
+        {
+          "command": "inlineClaude.generateCommit",
+          "group": "navigation",
+          "when": "scmProvider == git"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "inlineClaude.newChat",
+          "group": "navigation",
+          "when": "view == inlineClaude.chatView"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "inlineClaude.acceptEdit",
+          "when": "inlineClaude.editPending"
+        },
+        {
+          "command": "inlineClaude.rejectEdit",
+          "when": "inlineClaude.editPending"
+        },
+        {
+          "command": "inlineClaude.showDiff",
+          "when": "inlineClaude.editPending"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "inlineClaude.inlineEdit",
+        "key": "ctrl+i",
+        "mac": "cmd+i",
+        "when": "editorTextFocus && !editorReadonly"
+      },
+      {
+        "command": "inlineClaude.openChat",
+        "key": "ctrl+alt+i",
+        "mac": "cmd+alt+i"
+      },
+      {
+        "command": "inlineClaude.acceptEdit",
+        "key": "ctrl+enter",
+        "mac": "cmd+enter",
+        "when": "editorTextFocus && inlineClaude.editPending && !suggestWidgetVisible && !inlineSuggestionVisible"
+      },
+      {
+        "command": "inlineClaude.rejectEdit",
+        "key": "escape",
+        "when": "editorTextFocus && inlineClaude.editPending && !suggestWidgetVisible && !inlineSuggestionVisible && !findWidgetVisible"
+      },
+      {
+        "command": "inlineClaude.selectModel",
+        "key": "ctrl+alt+m",
+        "mac": "cmd+alt+m"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "inlineClaude",
+          "title": "Claude",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "inlineClaude": [
+        {
+          "type": "webview",
+          "id": "inlineClaude.chatView",
+          "name": "Chat"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Inline Claude",
+      "properties": {
+        "inlineClaude.claudePath": {
+          "type": "string",
+          "default": "claude",
+          "markdownDescription": "Path to the `claude` CLI. `claude` = auto-detect (PATH, then the binary bundled with the official Claude Code extension)."
+        },
+        "inlineClaude.model": {
+          "type": "string",
+          "default": "sonnet",
+          "markdownDescription": "Model for chat, agent, inline edit and commit messages. Alias (`haiku`, `sonnet`, `opus`) or full model id. Switch quickly from the status bar."
+        },
+        "inlineClaude.completionModel": {
+          "type": "string",
+          "default": "haiku",
+          "markdownDescription": "Model for ghost-text auto-suggestions. Keep this on `haiku` to stay light on your usage limits."
+        },
+        "inlineClaude.customModels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Extra model ids to show in the model picker."
+        },
+        "inlineClaude.subscriptionOnly": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Ignore `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` so requests always use your Claude subscription login, never a pay-per-token API key."
+        },
+        "inlineClaude.leanMode": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Skip user-level plugins, hooks, MCP servers and skills on every call. Cuts a large fixed overhead per request (we measured ~200k tokens vs <1k). Project `CLAUDE.md` is still honoured. Turn off only if you need your MCP servers/skills inside chat."
+        },
+        "inlineClaude.completions.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable ghost-text auto-suggestions."
+        },
+        "inlineClaude.completions.mode": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "manual"
+          ],
+          "default": "auto",
+          "enumDescriptions": [
+            "Suggest as you type (after a pause).",
+            "Only when you press Alt+\\ (zero background token use)."
+          ],
+          "description": "When to request suggestions."
+        },
+        "inlineClaude.completions.debounceMs": {
+          "type": "number",
+          "default": 900,
+          "minimum": 200,
+          "description": "Pause after typing before a suggestion is requested."
+        },
+        "inlineClaude.completions.maxPrefixLines": {
+          "type": "number",
+          "default": 60,
+          "description": "Lines before the cursor sent as context."
+        },
+        "inlineClaude.completions.maxSuffixLines": {
+          "type": "number",
+          "default": 20,
+          "description": "Lines after the cursor sent as context."
+        },
+        "inlineClaude.completions.maxLines": {
+          "type": "number",
+          "default": 12,
+          "description": "Maximum lines in one suggestion."
+        },
+        "inlineClaude.completions.disabledLanguages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "plaintext",
+            "scminput",
+            "log",
+            "markdown"
+          ],
+          "description": "Languages where auto-suggestions are off."
+        },
+        "inlineClaude.edit.contextLines": {
+          "type": "number",
+          "default": 40,
+          "description": "Lines of surrounding code sent with Inline Edit (each side)."
+        },
+        "inlineClaude.chat.defaultMode": {
+          "type": "string",
+          "enum": [
+            "ask",
+            "agent"
+          ],
+          "default": "ask",
+          "enumDescriptions": [
+            "Q&A with the code you give it. No tools = cheapest.",
+            "Claude can read/search/edit multiple files in your workspace."
+          ]
+        },
+        "inlineClaude.chat.maxContextLines": {
+          "type": "number",
+          "default": 300,
+          "description": "Max lines of the active file attached to an Ask message."
+        },
+        "inlineClaude.chat.agentTools": {
+          "type": "string",
+          "default": "Read,Glob,Grep,Edit,Write",
+          "description": "Tools Claude may use in Agent mode (comma separated)."
+        },
+        "inlineClaude.chat.allowBash": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Let Agent mode run shell commands without asking (adds `Bash`). **Off by default** — commands run unattended."
+        },
+        "inlineClaude.chat.concise": {
+          "type": "boolean",
+          "default": true,
+          "description": "Ask Claude for short answers (saves output tokens)."
+        },
+        "inlineClaude.commit.style": {
+          "type": "string",
+          "enum": [
+            "conventional",
+            "plain",
+            "gitmoji"
+          ],
+          "default": "conventional"
+        },
+        "inlineClaude.commit.maxDiffChars": {
+          "type": "number",
+          "default": 12000,
+          "description": "Max diff characters sent for commit message generation."
+        },
+        "inlineClaude.commit.language": {
+          "type": "string",
+          "default": "English"
+        },
+        "inlineClaude.autoUpdate": {
+          "type": "string",
+          "enum": [
+            "check",
+            "install",
+            "off"
+          ],
+          "default": "check",
+          "enumDescriptions": [
+            "Notify when a new GitHub release exists.",
+            "Download and install new releases automatically.",
+            "Never check."
+          ],
+          "markdownDescription": "Update checks for **sideloaded** installs from GitHub Releases. Marketplace installs update through VS Code itself."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "test": "node test/smoke.js",
+    "test:live": "node test/live.js",
+    "package": "vsce package --no-dependencies",
+    "vscode:prepublish": "node test/smoke.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/livemonkey1300/inline-claude.git"
+  },
+  "homepage": "https://github.com/livemonkey1300/inline-claude#readme",
+  "bugs": {
+    "url": "https://github.com/livemonkey1300/inline-claude/issues"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.2.0",
+    "ovsx": "^0.10.0"
+  }
+}
