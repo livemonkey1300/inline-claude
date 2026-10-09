@@ -43,7 +43,7 @@ class Service {
     const comp = this.get('completions.enabled')
       ? (this.get('completions.mode') === 'manual' ? 'manual' : 'on') : 'off';
     const icon = this.busy > 0 ? '$(loading~spin)' : '$(sparkle)';
-    this.status.text = `${icon} ${this.modelLabel(this.model())}`;
+    this.status.text = `${icon} ${this.modelLabel(this.model())}${comp === 'off' ? ' $(circle-slash)' : ''}`;
     const t = this.totals(true);
     const md = new vscode.MarkdownString(undefined, true);
     md.appendMarkdown(`**Inline Claude** — uses your Claude subscription\n\n`);
