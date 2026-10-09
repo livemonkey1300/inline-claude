@@ -38,7 +38,7 @@ class InlineEdit {
       }),
       vscode.languages.registerCodeActionsProvider({ scheme: 'file' }, {
         provideCodeActions: (doc, range, ctx) => this.quickFixes(doc, range, ctx),
-      }, { providedCodeActionKinds: [vscode.CodeActionKind.QuickFix] }),
+      }, { providedCodeActionKinds: [vscode.CodeActionKind.QuickFix, vscode.CodeActionKind.RefactorRewrite] }),
     );
   }
 
@@ -55,11 +55,25 @@ class InlineEdit {
   }
 
   quickFixes(doc, range, ctx) {
-    if (!ctx.diagnostics.length) return [];
-    const a = new vscode.CodeAction('Fix with Claude', vscode.CodeActionKind.QuickFix);
-    a.command = { command: 'inlineClaude.fix', title: 'Fix with Claude' };
-    a.diagnostics = ctx.diagnostics;
-    return [a];
+    const out = [];
+    const action = (title, kind, command) => {
+      const a = new vscode.CodeAction(title, kind);
+      a.command = { command, title };
+      out.push(a);
+      return a;
+    };
+    if (ctx.diagnostics.length) {
+      action('✨ Fix with Claude', vscode.CodeActionKind.QuickFix, 'inlineClaude.fix').diagnostics = ctx.diagnostics;
+    }
+    // Copilot-style "Rewrite" group on any selection (lightbulb / Ctrl+.)
+    if (!range.isEmpty || ctx.triggerKind === vscode.CodeActionTriggerKind.Invoke) {
+      const rw = vscode.CodeActionKind.RefactorRewrite.append('claude');
+      action('✨ Modify with Claude…', rw, 'inlineClaude.inlineEdit');
+      action('✨ Review with Claude', rw, 'inlineClaude.review');
+      action('✨ Explain with Claude', rw, 'inlineClaude.explain');
+      action('✨ Add docs with Claude', rw, 'inlineClaude.docs');
+    }
+    return out;
   }
 
   setPending(p) {

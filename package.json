@@ -52,6 +52,16 @@
         "category": "Claude"
       },
       {
+        "command": "inlineClaude.review",
+        "title": "Review Code",
+        "category": "Claude"
+      },
+      {
+        "command": "inlineClaude.clearReview",
+        "title": "Clear Review Comments",
+        "category": "Claude"
+      },
+      {
         "command": "inlineClaude.explain",
         "title": "Explain This",
         "category": "Claude"
@@ -164,6 +174,10 @@
           "command": "inlineClaude.docs",
           "group": "1_edit@4",
           "when": "!editorReadonly"
+        },
+        {
+          "command": "inlineClaude.review",
+          "group": "1_edit@5"
         },
         {
           "command": "inlineClaude.explain",
@@ -310,7 +324,7 @@
         },
         "inlineClaude.completions.debounceMs": {
           "type": "number",
-          "default": 900,
+          "default": 600,
           "minimum": 200,
           "description": "Pause after typing before a suggestion is requested."
         },
@@ -411,6 +425,11 @@
             "Never check."
           ],
           "markdownDescription": "Update checks for **sideloaded** installs from GitHub Releases. Marketplace installs update through VS Code itself."
+        },
+        "inlineClaude.completions.debug": {
+          "type": "boolean",
+          "default": false,
+          "description": "Log every suggestion request (timing, result, why it was skipped) to the Inline Claude output channel."
         }
       }
     }

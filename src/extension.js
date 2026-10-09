@@ -6,11 +6,13 @@ const { CompletionProvider } = require('./completions');
 const { ChatProvider } = require('./chat');
 const commit = require('./commit');
 const updater = require('./updater');
+const { Review } = require('./review');
 
 function activate(context) {
   const svc = new Service(context);
   const edit = new InlineEdit(svc, context);
   const chat = new ChatProvider(svc, context);
+  const review = new Review(svc, edit, context);
 
   const reg = (id, fn) => context.subscriptions.push(vscode.commands.registerCommand(id, fn));
 
@@ -22,6 +24,8 @@ function activate(context) {
   reg('inlineClaude.fix', () => edit.fix());
   reg('inlineClaude.optimize', () => edit.optimize());
   reg('inlineClaude.docs', () => edit.docs());
+  reg('inlineClaude.review', () => review.run());
+  reg('inlineClaude.clearReview', () => review.clear());
 
   // Chat-based actions
   reg('inlineClaude.explain', () => chat.ask('Explain this code: what it does, and anything surprising.', { mode: 'ask' }));
