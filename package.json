@@ -2,7 +2,7 @@
   "name": "inline-claude",
   "displayName": "Inline Claude",
   "description": "Copilot-style inline edit, ghost-text completions, chat, agent mode and AI commit messages — powered by your own Claude Pro/Max subscription through the Claude Code CLI. No API key.",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "publisher": "livemonkey1300",
   "license": "MIT",
   "engines": {
