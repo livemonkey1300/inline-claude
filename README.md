@@ -12,6 +12,7 @@ Copilot-style AI inside VS Code, powered by **your own Claude Pro/Max subscripti
 | **Inline edit** | `Ctrl+I` / `Cmd+I` — select code (or place the cursor), describe the change. Edit appears in place with **Accept (Ctrl+Enter) / Reject (Esc) / Diff** CodeLens. |
 | **Ghost-text suggestions** | Type and pause; `Tab` to accept. `Alt+\` to trigger manually. |
 | **Chat** | `Ctrl+Alt+I` — sidebar chat with streaming, `@file` mentions, Copy/Insert on code blocks. |
+| **Hand off to Claude Code** | `Ctrl+Alt+Enter`, right-click → Claude → *Hand Off*, the lightbulb, or type `/agent …` in the `Ctrl+I` box — opens a new [Claude Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) session prefilled with your task, an `@file#L10-40` reference, the selected code and any errors. Press Enter there to let it do the multi-file heavy lifting. |
 | **Ask / Agent modes** | *Ask* = no tools, cheapest. *Agent* = reads, searches and edits **multiple files** in your workspace. |
 | **Right-click → Claude** | Inline Edit, Fix, Optimize, Add Docs, Explain, Write Tests, Ask about selection. Also a *Fix with Claude* quick fix on errors. |
 | **AI commit message** | ✨ button in Source Control (staged diff, falls back to unstaged; matches your recent commit style). |

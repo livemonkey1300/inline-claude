@@ -92,6 +92,12 @@
         "category": "Claude"
       },
       {
+        "command": "inlineClaude.sendToClaudeCode",
+        "title": "Hand Off to Claude Code (Agent)",
+        "category": "Claude",
+        "icon": "$(rocket)"
+      },
+      {
         "command": "inlineClaude.openChat",
         "title": "Open Chat",
         "category": "Claude",
@@ -190,6 +196,10 @@
         {
           "command": "inlineClaude.askSelection",
           "group": "2_chat@3"
+        },
+        {
+          "command": "inlineClaude.sendToClaudeCode",
+          "group": "3_agent@1"
         }
       ],
       "scm/title": [
@@ -227,6 +237,12 @@
         "key": "ctrl+i",
         "mac": "cmd+i",
         "when": "editorTextFocus && !editorReadonly"
+      },
+      {
+        "command": "inlineClaude.sendToClaudeCode",
+        "key": "ctrl+alt+enter",
+        "mac": "cmd+alt+enter",
+        "when": "editorTextFocus"
       },
       {
         "command": "inlineClaude.openChat",

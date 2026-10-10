@@ -14,6 +14,16 @@ assert.strictEqual(stripFences('```js\nlet a = 1;\n```'), 'let a = 1;');
 assert.strictEqual(stripFences('plain'), 'plain');
 assert.strictEqual(stripFences('```\nx\n'), 'x\n');
 
+// hand-off prompt to Claude Code
+const { buildPrompt } = require('../src/handoff');
+const hp = buildPrompt({ task: 'split this up', rel: 'src/a.js', lang: 'javascript', startLine: 3, endLine: 5, code: 'x\ny\nz\n', diagnostics: ['L4: boom'] });
+assert.ok(hp.startsWith('split this up\n'));
+assert.ok(hp.includes('@src/a.js#L3-5'));
+assert.ok(hp.includes('```javascript\nx\ny\nz\n```'));
+assert.ok(hp.includes('- L4: boom'));
+const hw = buildPrompt({ task: '', rel: 'src/a.js', lang: 'javascript', startLine: 1, endLine: 9 });
+assert.ok(hw.includes('Context: @src/a.js') && !hw.includes('#L') && !hw.includes('```'));
+
 // binary resolution never throws and returns a string
 assert.strictEqual(typeof resolveBinary('claude'), 'string');
 assert.strictEqual(resolveBinary('/custom/claude'), '/custom/claude');

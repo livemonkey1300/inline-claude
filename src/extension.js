@@ -7,6 +7,7 @@ const { ChatProvider } = require('./chat');
 const commit = require('./commit');
 const updater = require('./updater');
 const { Review } = require('./review');
+const handoff = require('./handoff');
 
 function activate(context) {
   const svc = new Service(context);
@@ -36,6 +37,7 @@ function activate(context) {
     const q = await vscode.window.showInputBox({ title: 'Ask Claude about the selection', placeHolder: 'Your question…', ignoreFocusOut: true });
     if (q?.trim()) chat.ask(q, { mode: chat.mode });
   });
+  reg('inlineClaude.sendToClaudeCode', (task) => handoff.sendToClaudeCode(typeof task === 'string' ? task : undefined));
   reg('inlineClaude.openChat', () => vscode.commands.executeCommand('inlineClaude.chatView.focus'));
   reg('inlineClaude.newChat', () => chat.newChat());
 

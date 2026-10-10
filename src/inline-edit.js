@@ -2,6 +2,7 @@
 const vscode = require('vscode');
 const path = require('path');
 const { stripFences } = require('./util');
+const { sendToClaudeCode } = require('./handoff');
 
 const SYSTEM = [
   'You are a precise code-editing engine embedded in an editor.',
@@ -72,6 +73,7 @@ class InlineEdit {
       action('✨ Review with Claude', rw, 'inlineClaude.review');
       action('✨ Explain with Claude', rw, 'inlineClaude.explain');
       action('✨ Add docs with Claude', rw, 'inlineClaude.docs');
+      action('🚀 Hand off to Claude Code…', rw, 'inlineClaude.sendToClaudeCode');
     }
     return out;
   }
@@ -94,11 +96,14 @@ class InlineEdit {
       instruction = await vscode.window.showInputBox({
         title: 'Claude Inline Edit',
         prompt: sel.isEmpty ? 'What should Claude write at the cursor?' : 'How should Claude change the selection?',
-        placeHolder: sel.isEmpty ? 'e.g. a function that debounces another function' : 'e.g. convert to async/await, add error handling',
+        placeHolder: (sel.isEmpty ? 'e.g. a function that debounces another function' : 'e.g. convert to async/await, add error handling')
+          + '  ·  start with /agent to hand off to Claude Code',
         value: this.lastInstruction,
         ignoreFocusOut: true,
       });
       if (!instruction?.trim()) return;
+      const agent = /^\/(agent|cc)\b\s*/i.exec(instruction);
+      if (agent) return sendToClaudeCode(instruction.slice(agent[0].length));
       this.lastInstruction = instruction;
     }
 
